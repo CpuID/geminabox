@@ -7,6 +7,7 @@
 # https://github.com/rubygems/rubygems/pull/364
 #
 # This library (and its call) should be deleted once that pull request is resolved.
+# TODO: merge has been completed, nuke this.
 
 require 'geminabox'
 require 'rubygems/indexer'
