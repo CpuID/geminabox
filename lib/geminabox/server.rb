@@ -10,6 +10,7 @@ module Geminabox
     delegate_to_geminabox(
       :public_folder,
       :store,
+      :disk_cache_hooks,
       :data,
       :build_legacy,
       :incremental_updates,
@@ -42,6 +43,8 @@ module Geminabox
       end
 
       def reindex(force_rebuild = false)
+        logger = Logger.new(STDOUT)
+        logger.info "Calling Geminabox::Server.reindex. force_rebuild: #{force_rebuild}"
         fixup_bundler_rubygems!
         force_rebuild = true unless incremental_updates
         if force_rebuild
@@ -67,7 +70,7 @@ module Geminabox
       end
 
       def dependency_cache
-        @dependency_cache ||= Geminabox::DiskCache.new(File.join(data, "_cache"))
+        @dependency_cache ||= Geminabox::DiskCache.new(File.join(data, "_cache"), settings.disk_cache_hooks)
       end
     end
 
@@ -182,10 +185,15 @@ HTML
     end
 
     def all_gems_with_duplicates
+      settings.store.access_metadata
       specs_files_paths.map do |specs_file_path|
         if File.exists?(specs_file_path)
-          Marshal.load(Gem.gunzip(Gem.read_binary(specs_file_path)))
+          result = Marshal.load(Gem.gunzip(Gem.read_binary(specs_file_path)))
+          require 'pp'
+          pp result
+          result
         else
+          puts "No results."
           []
         end
       end
@@ -250,12 +258,20 @@ HTML
 
       # Return a list of versions of gem 'gem_name' with the dependencies of each version.
       def gem_dependencies(gem_name)
+        logger = Logger.new(STDOUT)
+        logger.info "Calling Geminabox::Server.gem_dependencies '#{gem_name}'"
         dependency_cache.marshal_cache(gem_name) do
           load_gems.
             select { |gem| gem_name == gem.name }.
             map    { |gem| [gem, spec_for(gem.name, gem.number, gem.platform)] }.
             reject { |(_, spec)| spec.nil? }.
             map do |(gem, spec)|
+              require 'pp'
+              puts "gem:"
+              pp gem
+              puts "spec:"
+              pp spec
+              puts ""
               {
                 :name => gem.name,
                 :number => gem.number.version,

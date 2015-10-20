@@ -3,8 +3,13 @@ module Geminabox
   class Geminabox::DiskCache
     attr_reader :root_path
 
-    def initialize(root_path)
+    def initialize(root_path, hooks_object = nil)
+      @logger = Logger.new(STDOUT)
+      @logger.info "Instantiated a Geminabox::DiskCache object."
       @root_path = root_path
+      if ! hooks_object.nil?
+        @hooks = hooks_object
+      end
       ensure_dir_exists!
     end
 
@@ -35,7 +40,7 @@ module Geminabox
     end
 
     def key_hash(key)
-      Digest::MD5.hexdigest(key)
+      Digest::SHA256.hexdigest(key)
     end
 
     def path(key_hash)
@@ -52,6 +57,7 @@ module Geminabox
 
     def read_int(key_hash)
       path = path(key_hash)
+      @hooks.pre_read path
       yield(path) if File.exists?(path)
     end
 
@@ -66,7 +72,9 @@ module Geminabox
     end
 
     def write_int(key_hash)
-      File.open(path(key_hash), 'wb') { |f| yield(f) }
+      path_key_hash = path(key_hash)
+      File.open(path_key_hash, 'wb') { |f| yield(f) }
+      @hooks.post_write path_key_hash
     end
 
   end

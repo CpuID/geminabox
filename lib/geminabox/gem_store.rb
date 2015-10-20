@@ -25,6 +25,10 @@ module Geminabox
       File.expand_path File.join Geminabox.data, *path_info
     end
 
+    def self.access_metadata
+      # No action for local file store.
+    end
+
     def initialize(gem, overwrite = false)
       @gem = gem
       @overwrite = overwrite && overwrite == 'true'

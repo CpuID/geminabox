@@ -28,6 +28,7 @@ module Geminabox
   autoload :GemVersionCollection,   geminabox_path('gem_version_collection')
   autoload :Server,                 geminabox_path('server')
   autoload :DiskCache,              geminabox_path('disk_cache')
+  autoload :DiskCacheHooks,         geminabox_path('disk_cache_hooks')
   autoload :IncomingGem,            geminabox_path('incoming_gem')
 
   class << self
@@ -36,6 +37,7 @@ module Geminabox
       :data,
       :public_folder,
       :store,
+      :disk_cache_hooks,
       :build_legacy,
       :incremental_updates,
       :views,
@@ -67,6 +69,7 @@ module Geminabox
     data:                 File.join(File.dirname(__FILE__), *%w[.. data]),
     public_folder:        File.join(File.dirname(__FILE__), *%w[.. public]),
     store:                Geminabox::GemStore,
+    disk_cache_hooks:     Geminabox::DiskCacheHooks,
     build_legacy:         false,
     incremental_updates:  true,
     views:                File.join(File.dirname(__FILE__), *%w[.. views]),
