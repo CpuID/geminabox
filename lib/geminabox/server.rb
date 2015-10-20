@@ -151,6 +151,12 @@ module Geminabox
         error_response error.code, error.reason
       end
 
+      # Update the dependency cache, as this has hooks for remote cache stores.
+      dependency_cache.marshal_cache(gem.name) do
+        logger = Logger.new(STDOUT)
+        logger.info "Updated dependency cache for gem '#{gem.name}'"
+      end
+
       if api_request?
         "Gem #{gem.name} received and indexed."
       else
