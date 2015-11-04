@@ -9,12 +9,16 @@ module Geminabox
     # platform] triples.
     def initialize(initial_gems=[])
       require 'pp'
-      puts "GemVersionCollection initialize initial_gems:"
-      pp initial_gems
-      puts ""
+      logger = Logger.new(STDOUT)
+      logger.info "GemVersionCollection initialize initial_gems:"
+      logger.info PP.pp(initial_gems, '')
+      logger.info ""
       @gems = initial_gems.map{|object|
         coerce_to_gem_version(object)
       }.sort
+      logger.info "@gems:"
+      logger.info PP.pp(@gems, '')
+      logger.info ''
     end
 
     # FIXME: Terminology makes no sense when the version are not all of the same
