@@ -8,6 +8,10 @@ module Geminabox
     # Array of Geminabox::GemVersion objects, or an array of [name, version,
     # platform] triples.
     def initialize(initial_gems=[])
+      require 'pp'
+      puts "GemVersionCollection initialize initial_gems:"
+      pp initial_gems
+      puts ""
       @gems = initial_gems.map{|object|
         coerce_to_gem_version(object)
       }.sort
