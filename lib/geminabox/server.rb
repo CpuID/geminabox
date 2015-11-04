@@ -56,6 +56,9 @@ module Geminabox
             updated_gemspecs = Geminabox::Indexer.updated_gemspecs(indexer)
             Geminabox::Indexer.patch_rubygems_update_index_pre_1_8_25(indexer)
             indexer.update_index
+            logger.info "updated_gemspecs:"
+            logger.info PP.pp(updated_gemspecs, '')
+            logger.info ""
             updated_gemspecs.each { |gem| dependency_cache.flush_key(gem.name) }
           rescue => e
             puts "#{e.class}:#{e.message}"
